@@ -97,7 +97,7 @@ window.addEventListener("load", function()
         context.ellipse(center_x, center_y, 200, 200, 0, 0, Math.PI * 2);
         context.stroke();
 
-        let dotAt = function(hue, sat, val)
+        let dotAt = function(hue, sat, val, rad)
         {
             context.setTransform();
             context.translate(center_x, center_y);
@@ -106,18 +106,22 @@ window.addEventListener("load", function()
             let [r,g,b] = hsvToRgb(hue, sat, val);
             context.fillStyle = `rgb(${r}, ${g}, ${b})`;
             context.beginPath();
-            let rad = 2;
             context.ellipse(0, 0, rad, rad, 0, 0, Math.PI * 2);
             context.fill();
         };
 
+        let max = 0;
+        
         for (let sat = 0; sat < histo.height(); ++sat)
         {
             for (let hue = 0; hue < histo.width(); ++hue)
             {
-                dotAt(hue, sat, 25);
+                dotAt(hue, sat, 25, 2);
+                max = Math.max(histo.get(hue, sat), max);
             }
         }
+
+        let maxlog = Math.log10(max);
 
         for (let sat = 0; sat < histo.height(); ++sat)
         {
@@ -126,7 +130,9 @@ window.addEventListener("load", function()
                 let count = histo.get(hue, sat);
                 if (count == 0)
                     continue;
-                dotAt(hue, sat, 100);
+                let proportion = Math.log10(count) / maxlog;
+                let rad = proportion * 3;
+                dotAt(hue, sat, 100, rad);
             }
         }
     };
