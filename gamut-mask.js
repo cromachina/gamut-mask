@@ -1,4 +1,3 @@
-
 window.addEventListener("load", function()
 {
     let Array2d = function(width, height, type)
@@ -111,7 +110,7 @@ window.addEventListener("load", function()
         };
 
         let max = 0;
-        
+
         for (let sat = 0; sat < histo.height(); ++sat)
         {
             for (let hue = 0; hue < histo.width(); ++hue)
@@ -148,10 +147,9 @@ window.addEventListener("load", function()
         renderHistogram(display_canvas, histo);
     };
 
-    document.body.ondrop = function(event)
+    let handleDataTransfer = function(items)
     {
-        event.preventDefault();
-        for (let item of event.dataTransfer.items)
+        for (let item of items)
         {
             if (item.type.startsWith("image/"))
             {
@@ -167,6 +165,18 @@ window.addEventListener("load", function()
                 break;
             }
         }
+    }
+
+    document.body.ondrop = function(event)
+    {
+        event.preventDefault();
+        handleDataTransfer(event.dataTransfer.items);
+    };
+
+    document.body.onpaste = function(event)
+    {
+        event.preventDefault();
+        handleDataTransfer(event.clipboardData.items)
     };
 
     document.body.ondragover = function(event)
